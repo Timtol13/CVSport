@@ -1,0 +1,24 @@
+body{
+    padding: 30px;
+    color: #fff;
+}
+.info_profile{
+    position: absolute;
+    width: 94%;
+    height: 600px;
+    background: radial-gradient(#5e5e5e, #3b3b3b);
+    border-radius: 40px;
+}
+.profile_photo{
+    width: 350px;
+    height: 370px;
+    margin: 50px;
+    border-radius: 20px;
+}
+.profile_text{
+    width: 100%;
+    border-radius: 30px;
+    height: 100%;
+    text-align: center;
+    border: 2px solid #fff;
+}

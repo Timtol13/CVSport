@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html>
+    <head id="head">
+        <title>Registration</title>
+    </head>
+    <style>
+        .from-control{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20%;
+            height: 10%;
+            background-color: #000;
+        }
+    </style>
+    <body>
+        <form method='POST'>
+            {% csrf_token %}
+            <h1>Will start!</h1>
+            {{ form.username }}
+            {{ form.password }}
+            <select name="role">
+                {% for i in form_s.role %}
+                    <option>{{ i }}</option>
+                {% endfor %}
+            </select>
+            <button formmethod="POST">Submit</button>
+            {{error}}
+        </form>
+    </body>
+    <script>
+        const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i"); 
+        let linkFile = document.createElement("link");
+        const heade = document.getElementById('head');
+          if (devices.test(navigator.userAgent)) 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/mobile.css' %}"
+          } 
+          else 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/comp.css' %}"
+          } 
+        heade.appendChild(linkFile);
+    </script>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+<head id="head">
+    <title>Профиль {{ user }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" >
+<head>
+    <body>
+    <div class="info_profile">
+        <div class="profile_photo">
+            <img src={{ profile.user.photo.url }}>
+        </div>
+        <div class="profile_text">
+                <h2>ФИО: {{ profile.user.first_name }} {{ profile.user.second_name }} {{ profile.user.patronimyc }}</h2>
+                <h3>{% if role == '1' %} Игрок на позиции {{ profile.get_position_display }} 
+                    <h3>играю ногой: {{ profile.get_leg_display }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Возраст: {{ profile.user.age }}</h3>
+                    <h3>Рост: {{ profile.user.height }} см.</h3>
+                    <h3>Вес: {{ profile.user.weight }} кг.</h3>
+                    <h3>Телефон: {{ profile.user.phone }}</h3>
+                    <h3>Почта: {{ profile.user.email }}</h3>
+                    <h3>{% if profile.user.shengen %}Есть шенген{% else %}Без шенгена{% endif %}</h3>
+                    <h3>{{ profile.user.sources }}</h3>
+                    <div class="container"> 
+                    {% for video in videos %}
+                    <a href="{{ video.file.url }}">
+                        <center>
+                            <video
+                                id="v0"
+                                controls
+                                class="video-js"
+                                poster="{{ video.image.url }}" >
+                                <source src="{{ video.file.url }}">
+                            </video>
+                        </center>
+                    </a>
+                        <center>
+                            <video
+                                id="v0"
+                                controls
+                                class="video-js"
+                                poster="{{ video.image.url }}" >
+                                <source src="{{ video.file.url }}">
+                            </video>
+                        </center>
+                    {% endfor %}
+                    {% elif role == '2' %}Роль: Агент 
+                    <h3>Описание: {{ profile.user.description }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Номер телефона: {{ profile.user.phone }}</h3>
+                    <h3>E-mail: {{ profile.user.email }}</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        <label>
+                            <i>Добавить игрока</i>
+                            <input type="text" name="player_data">Фамилия 
+                            <input type="text" name="player_data">Имя 
+                            <input type="text" name="player_data">Отчество
+                            <button formmethod="post">+</button>
+                        </label>
+                    </form>
+                    {% elif role == '3' %}Роль: Тренер
+                    <h3>Описание: {{ profile.user.description }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Номер телефона: {{ profile.user.phone }}</h3>
+                    <h3>E-mail: {{ profile.user.email }}</h3>
+                    <h3>Адрес школы, в которой обучает: {{ profile.country_s }}, {{ profile.city_s }}</h3>
+                    <h3>Номер школы: {{ profile.phone_s }}</h3>
+                    <h3>E-mail школы {{ profile.e_mail_s }}</h3>
+                    
+                    {% elif role == '4' %}Роль: Родитель
+                    <h3>Описание: {{ profile.user.description }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Номер телефона: {{ profile.user.phone }}</h3>
+                    <h3>E-mail: {{ profile.user.email }}</h3>
+                    {% elif role == '5' %}Роль: Клуб
+                    <h3>Описание: {{ profile.user.description }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Номер телефона: {{ profile.user.phone }}</h3>
+                    <h3>E-mail: {{ profile.user.email }}</h3>
+                    {% elif role == '6' %}Роль: Скаут
+                    <h3>Описание: {{ profile.user.description }}</h3>
+                    <h3>Проживание: {{ profile.user.country }}, {{ profile.user.city }}</h3>
+                    <h3>Номер телефона: {{ profile.user.phone }}</h3>
+                    <h3>E-mail: {{ profile.user.email }}</h3>
+                {% endif %}</h3>
+        </div>
+    </div>
+    </body>
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+        const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i"); 
+        let linkFile = document.createElement("link");
+        const heade = document.getElementById('head');
+          if (devices.test(navigator.userAgent)) 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/mobile.css' %}"
+          } 
+          else 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/comp.css' %}"
+          } 
+        heade.appendChild(linkFile);
+        vid = document.getElementById('v0'); 
+ 
+        vid.addEventListener('mouseenter', function() {
+        vid.play();
+        });
+
+        vid.addEventListener('mouseleave', function() {
+        vid.pause();
+        });
+    </script>
+</html>

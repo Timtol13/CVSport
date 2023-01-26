@@ -1,0 +1,39 @@
+<!DOCTYPE htnl>
+
+{% load static %}
+
+<html>
+  <head id="head">
+  <title>{{ user }}</title>
+</head>
+
+<body style="width: 100%;">
+    <form method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ form_player.as_p }}
+        <h3>Фото в профиле</h3>
+        <input type="file" name="photo" id="photo">
+        <h3>Видео в профиле</h3>
+        <input type="file" name="video" id="video">
+        <button formmethod="post" id="paymentLink">Buy it</button>
+    </form>
+<script type="text/javascript">
+  const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i"); 
+        let linkFile = document.createElement("link");
+        const heade = document.getElementById('head');
+          if (devices.test(navigator.userAgent)) 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/mobile.css' %}"
+          } 
+          else 
+          { 
+              linkFile.rel = 'stylesheet';
+              linkFile.href = "{% static 'css/comp.css' %}"
+          } 
+    heade.appendChild(linkFile);
+</script>
+
+</body>
+</html>

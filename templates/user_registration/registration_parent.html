@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+  <head id="head">
+  <title>{{ user }}</title>
+  <script type="text/javascript" src="https://js.bepaid.by/begateway-1-latest.min.js/begateway-1-latest.min.js"></script>
+  <style>
+    body {
+      font-family: 'Montserrat';
+    }
+    form{
+        width: 20%;
+        text-align: start;
+        vertical-align: start;
+        background-color: #000;
+        padding: 30px;
+        color: #fff;
+        border-radius: 30px;
+    }
+    form input[type="text"]{
+        width: 100%;
+        margin-top: 20px;
+        height: 30px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    form input[type="tel"]{
+        width: 100%;
+        margin-top: 20px;
+        height: 30px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    form input[type="email"]{
+        width: 100%;
+        margin-top: 20px;
+        height: 30px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    form input[type="checkbox"]{
+        margin-top: 20px;
+    }
+    form select{
+        width: 100%;
+        margin-top: 20px;
+        height: 30px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    form textarea{
+        min-width: 100%;
+        max-width: 100%;
+        margin-top: 20px;
+        max-height: 90px;
+        min-height: 90px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    button{
+        width: 100%;
+        margin-top: 20px;
+        height: 30px;
+        border-radius: 5px;
+        border: 0px solid;
+    }
+    .input-file {
+        margin-top: 20px;
+        position: relative;
+        display: inline-block;
+    }
+    .input-file span {
+        display: inline-block;
+        font-size: 14px;
+        border-radius: 4px;
+        background-color: #333;
+        height: 40px;
+        padding: 10px 20px;
+        box-sizing: border-box;
+        border: none;
+        transition: background-color 0.2s;
+    }
+    .input-file input[type=file] {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+        display: block;
+        width: 0;
+        height: 0;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        margin-top: 20px;
+        height: 34px;
+      }
+      
+      .switch input {display:none;}
+      
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #2196F3;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+      
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+      
+      input:checked + .slider {
+        background-color: #2196F3;
+      }
+      
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+      }
+      
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+      
+      .slider.round {
+        border-radius: 34px;
+      }
+      
+      .slider.round:before {
+        border-radius: 50%;
+      }
+  </style>
+</head>
+
+<body style="width: 100%;">
+    <form method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.first_name }}<i>Имя</i>
+        {{ form.second_name }}<i>Фамилия</i>
+        {{ form.patronimyc }}<i>Отчество</i>
+        {{ form.phone }}<i>Номер Телефона</i>
+        {{ form.email }}<i>E-mail</i>
+        {{ form.country }}<i>Страна</i>
+        {{ form.city }}<i>Город</i>
+        {{ form.description }}<i>Описанеи</i>
+          <h3>Фото в профиле:</h3>
+          <input type="file" name="prof_photo" id="prof_photo">
+          <h3>Фото паспорта:</h3>
+          <input type="file" name="passport" id="passport">
+          <button formmethod="post" id="paymentLink">Buy it</button>
+    </form>
+<script type="text/javascript">
+  const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i"); 
+  let linkFile = document.createElement("link");
+  const heade = document.getElementById('head');
+    if (devices.test(navigator.userAgent)) 
+    { 
+        linkFile.rel = 'stylesheet';
+        linkFile.href = "{% static 'css/mobile.css' %}"
+    } 
+    else 
+    { 
+        linkFile.rel = 'stylesheet';
+        linkFile.href = "{% static 'css/comp.css' %}"
+    } 
+    heade.appendChild(linkFile);
+  var options = {
+    type: 'overlay',
+    id: 'paymentLink',
+    url: "https://checkout.bepaid.by/v2/checkout?token=2dace3c57d96d64a0026364c7bd26c627e7a96d8fef8e129d45b2ebd2864db1c",
+    style: "",
+    size: { width: 400, height: 480 }
+  };
+
+  var pf = new BeGateway(options);
+  pf.buildForm();
+</script>
+
+</body>
+</html>
