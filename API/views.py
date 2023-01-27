@@ -12,3 +12,4 @@ class RegistrationAPIView(viewsets.ModelViewSet):
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
