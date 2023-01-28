@@ -64,8 +64,11 @@ WSGI_APPLICATION = 'CV_Sport.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'CVSportBaseDataBase',
-        'USER': ''
+        'NAME': 'cvsportbasedatabase',
+        'USER': 'm',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
