@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'easy_thumbnails',
-    'filer',
     'mptt',
     'corsheaders',
     'API',
