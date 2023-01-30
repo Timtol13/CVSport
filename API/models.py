@@ -43,7 +43,7 @@ class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronimyc = models.CharField("Отчество", max_length=30)
+    patronymyc = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -52,7 +52,7 @@ class Agent(models.Model):
     players = models.JSONField("Игроки", null=True, blank=True)
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronimyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymyc}")
 
 
 class Parent(models.Model):
@@ -76,7 +76,7 @@ class Trainer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronimyc = models.CharField("Отчество", max_length=30)
+    patronymic = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
