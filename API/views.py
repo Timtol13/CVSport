@@ -13,3 +13,13 @@ class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
+
+class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+
+class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
+    queryset = PlayersVideo.objects.all()
+    serializer_class = VideoSerializer
+

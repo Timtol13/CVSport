@@ -6,6 +6,8 @@ router = DefaultRouter()
 
 router.register('registration', RegistrationAPIView)
 router.register('advanced/Player', AdvancedRegistration_Player_ApiView)
+router.register('advanced/Agent', AdvancedRegistration_Agent_ApiView)
+router.register('add/video', AdvancedRegistration_Video_ApiView)
 
 urlpatterns = [
     path('', include(router.urls)),
