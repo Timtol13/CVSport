@@ -1,29 +1,34 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-
+from multiselectfield import MultiSelectField
+POSITION_CHOICES = (
+        ('1', 'Вратарь'),
+        ('2', 'Центральный защитник'),
+        ('3', 'Левый защитник'),
+        ('4', 'Правый защитник'),
+        ('5', 'Центральный опорный полузащитник'),
+        ('6', 'Центральный полузащитник'),
+        ('7', 'Левый полузащитник'),
+        ('8', 'Правый полузащитник'),
+        ('9', 'Центральный нападающий'),
+        ('10', 'Правый вингер'),
+        ('11', 'Левый вингер'),
+        ('12', 'Инсайдер'),
+    )
 class Player(models.Model):
     leg = [
         ('R', 'Правая'),
         ('L', 'Левая'),
+        ('B', 'Обе')
     ]
-    position = [
-        ('1', 'Вратарь'),
-        ('2', 'Центральный защитник'),
-        ('3', 'Левый и правый защитник'),
-        ('4', 'Левый и правый фланговый защитник'),
-        ('5', 'Лентральный опорный полузащитник'),
-        ('6', 'Центральный полузащитник'),
-        ('7', 'Левый/правый полузащитник'),
-        ('8', 'Центральный атакующий полузащитник')
-    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     leg = models.TextField('Нога', choices=leg)
-    position = models.TextField('Позиция', choices=position, default='Позиция')
+    position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES)
     age = models.CharField("Возраст", max_length=5, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=30, blank=True, null=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
-    patronimyc = models.CharField("Отчество", max_length=30, blank=True, null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True, null=True)
     height = models.CharField("Рост", max_length=4, blank=True, null=True)
     weight = models.CharField("Вес", max_length=4, blank=True, null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
@@ -43,33 +48,33 @@ class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronymyc = models.CharField("Отчество", max_length=30)
+    patronymic = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
-    players = models.JSONField("Игроки", null=True, blank=True)
+    players = models.ManyToManyField(Player,"Игроки", null=True, blank=True)
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronymyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymic}")
 
 
 class Parent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronimyc = models.CharField("Отчество", max_length=30)
+    patronymic = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
-    players = models.JSONField("Игроки", blank=True, null=True)
+    players = models.ManyToManyField(Player, "Игроки", blank=True, null=True)
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronimyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymic}")
 
 
 class Trainer(models.Model):
@@ -82,7 +87,8 @@ class Trainer(models.Model):
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
-    players = models.JSONField("Игроки", blank=True, null=True)
+
+    players = models.ManyToManyField(Player,"Игроки", blank=True, null=True)
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     #school description (ending 's' does meen 'school')
 
@@ -94,7 +100,7 @@ class Trainer(models.Model):
     #телефон, e-mail, фото до 10, ссылки на ютуб, и т.п. до 10
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronimyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymic}")
 
 
 class Club(models.Model):
@@ -109,26 +115,26 @@ class Club(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronimyc = models.CharField("Отчество", max_length=30)
+    patronymic = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
-    players = models.JSONField("Игроки", blank=True, null=True)
+    players = models.ManyToManyField(Player,"Игроки", blank=True, null=True)
     schools = models.JSONField("Школы", blank=True, null=True)
     school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа")
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronimyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymic}")
 
 
 class Scout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20)
     second_name = models.CharField("Фамилия", max_length=30)
-    patronimyc = models.CharField("Отчество", max_length=30)
+    patronymic = models.CharField("Отчество", max_length=30)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -138,7 +144,7 @@ class Scout(models.Model):
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
-        return str(f"{self.first_name} {self.second_name} {self.patronimyc}")
+        return str(f"{self.first_name} {self.second_name} {self.patronymic}")
 
 
 class PlayersVideo(models.Model):
