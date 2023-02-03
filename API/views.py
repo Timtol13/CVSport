@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .serializers import *
 from .models import *
 from django.contrib.auth.models import User
-
+from rest_framework.filters import SearchFilter
 
 class RegistrationAPIView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -12,7 +12,8 @@ class RegistrationAPIView(viewsets.ModelViewSet):
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-
+    filter_backends = [SearchFilter]
+    search_fields = ['first_name', 'second_name', 'patronymic']
 
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
