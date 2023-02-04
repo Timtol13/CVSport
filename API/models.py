@@ -15,6 +15,7 @@ POSITION_CHOICES = (
         ('11', 'Левый вингер'),
         ('12', 'Инсайдер'),
     )
+
 class Player(models.Model):
     leg = [
         ('R', 'Правая'),
