@@ -1,8 +1,11 @@
 from rest_framework import viewsets
 from .serializers import *
 from .models import *
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
+
 
 class RegistrationAPIView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -10,13 +13,16 @@ class RegistrationAPIView(viewsets.ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['username']
 
+
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
 
+
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
+
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
@@ -55,3 +61,15 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     queryset = PlayersVideo.objects.all()
     serializer_class = VideoSerializer
 
+
+class LoginView(viewsets.ViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+
+    def get(self, request, format=None):
+        content = {
+            'user': str(request.user),
+            'auth': str(request.auth),
+        }
+        return Response(content)

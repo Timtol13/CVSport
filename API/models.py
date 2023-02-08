@@ -24,8 +24,8 @@ class Player(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    leg = models.TextField('Нога', choices=leg)
-    position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES)
+    leg = models.TextField('Нога', choices=leg, blank=True, null=True)
+    position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES, blank=True, null=True)
     age = models.CharField("Возраст", max_length=5, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=30, blank=True, null=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
@@ -47,9 +47,9 @@ class Player(models.Model):
 
 class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20)
-    second_name = models.CharField("Фамилия", max_length=30)
-    patronymic = models.CharField("Отчество", max_length=30)
+    first_name = models.CharField("Имя", max_length=20, blank=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -64,9 +64,9 @@ class Agent(models.Model):
 
 class Parent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20)
-    second_name = models.CharField("Фамилия", max_length=30)
-    patronymic = models.CharField("Отчество", max_length=30)
+    first_name = models.CharField("Имя", max_length=20, blank=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -82,9 +82,9 @@ class Parent(models.Model):
 
 class Trainer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20)
-    second_name = models.CharField("Фамилия", max_length=30)
-    patronymic = models.CharField("Отчество", max_length=30)
+    first_name = models.CharField("Имя", max_length=20, blank=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -96,10 +96,10 @@ class Trainer(models.Model):
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     #school description (ending 's' does meen 'school')
 
-    country_s = models.CharField("Страна, в которой находится школа", max_length=50)
-    city_s = models.CharField("Город, в котором находится школа", max_length=50)
-    phone_s = models.CharField("Номер телефона школы", max_length=15)
-    e_mail_s = models.EmailField("E-Mail школы")
+    country_s = models.CharField("Страна, в которой находится школа", max_length=50, blank=True)
+    city_s = models.CharField("Город, в котором находится школа", max_length=50, blank=True)
+    phone_s = models.CharField("Номер телефона школы", max_length=15, blank=True)
+    e_mail_s = models.EmailField("E-Mail школы", blank=True)
     photo_s = models.ImageField("Фото школы", upload_to="school_photoes", null=True, blank=True)
     #телефон, e-mail, фото до 10, ссылки на ютуб, и т.п. до 10
 
@@ -128,7 +128,7 @@ class Club(models.Model):
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     # players = models.ManyToManyField(Player,related_name="club_players", blank=True,verbose_name="Игроки клуба")
     schools = models.JSONField("Школы", blank=True, null=True)
-    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа")
+    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True)
 
     def __str__(self):
         return str(f"{self.first_name} {self.second_name} {self.patronymic}")
@@ -136,16 +136,16 @@ class Club(models.Model):
 
 class Scout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20)
-    second_name = models.CharField("Фамилия", max_length=30)
-    patronymic = models.CharField("Отчество", max_length=30)
+    first_name = models.CharField("Имя", max_length=20, blank=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     # = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
-    school = models.TextField("Школы(Название, страна, город)", max_length=250)
+    school = models.TextField("Школы(Название, страна, город)", max_length=250, blank=True)
     photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):

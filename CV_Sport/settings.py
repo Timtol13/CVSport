@@ -6,24 +6,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-*=hol@h(1kbq4bov#fug!$h@394w4y&q6hx-380fof90y2ob)a'
 
-DEBUG = None
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-CORS_REPLACE_HTTPS_REFERER = True
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-]
-CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
-                      'content-type', 'accept', 'origin', 'Authorization',
-                      'access-control-allow-methods')
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,9 +17,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'easy_thumbnails',
     'mptt',
-    'rest_framework',
     'corsheaders',
     'API',
     'Accounts',
@@ -43,7 +29,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
