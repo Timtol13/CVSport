@@ -5,7 +5,8 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
 router.register('registration', RegistrationAPIView)
-router.register('login', LoginView)
+# router.register('login', LoginView),
+
 router.register('advanced/Player', AdvancedRegistration_Player_ApiView)
 router.register('advanced/Agent', AdvancedRegistration_Agent_ApiView)
 router.register('advanced/Trainer', AdvancedRegistration_Trainer_ApiView)
