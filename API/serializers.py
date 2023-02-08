@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PlayerSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Player
         fields = '__all__'
@@ -31,6 +32,8 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 
 class AgentSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Agent
         fields = '__all__'
@@ -41,6 +44,8 @@ class AgentSerializer(serializers.ModelSerializer):
 
 
 class TrainerSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Trainer
         fields = '__all__'
@@ -51,6 +56,8 @@ class TrainerSerializer(serializers.ModelSerializer):
 
 
 class ParentSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Parent
         fields = '__all__'
@@ -61,6 +68,7 @@ class ParentSerializer(serializers.ModelSerializer):
 
 
 class ClubSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Club
         fields = '__all__'
@@ -71,6 +79,8 @@ class ClubSerializer(serializers.ModelSerializer):
 
 
 class ScoutSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Scout
         fields = '__all__'
