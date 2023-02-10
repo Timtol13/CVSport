@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'mptt',
     'corsheaders',
     'API',
-    'Accounts',
     'registration',
 ]
 
@@ -46,9 +45,6 @@ MIDDLEWARE = [
 
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
@@ -79,7 +75,7 @@ WSGI_APPLICATION = 'CV_Sport.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cvsportbase',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'qwerty',
         'HOST': 'localhost',
@@ -131,6 +127,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static/'
 ]
+AUTH_USER_MODEL = 'registration.UserData'
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',

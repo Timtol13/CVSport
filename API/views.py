@@ -13,36 +13,26 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 
 
-class LoginAPIView(APIView):
-    serializer_class = UserSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['username']
-    permission_classes = [AllowAny]
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-class RegisterAPIView(APIView):
-    def post(self, request, format=None):
-        username = request.data.get("username")
-        password = request.data.get("password")
-        email = request.data.get("email")
+# class LoginAPIView(APIView):
+#     serializer_class = UserSerializer
+#     filter_backends = [SearchFilter]
+#     search_fields = ['username']
+#     permission_classes = [AllowAny]
+#
+#     def post(self, request):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if username and password and email:
-            user = User.objects.create_user(username=username, password=password, email=email)
-            if user:
-                return Response({"success": "User created successfully"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"error": "Failed to create a user"}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error": "The username, password and email are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
@@ -50,7 +40,7 @@ class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Trainer_ApiView(viewsets.ModelViewSet):
@@ -58,7 +48,7 @@ class AdvancedRegistration_Trainer_ApiView(viewsets.ModelViewSet):
     serializer_class = TrainerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Parent_ApiView(viewsets.ModelViewSet):
@@ -66,7 +56,7 @@ class AdvancedRegistration_Parent_ApiView(viewsets.ModelViewSet):
     serializer_class = ParentSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Club_ApiView(viewsets.ModelViewSet):
@@ -74,7 +64,7 @@ class AdvancedRegistration_Club_ApiView(viewsets.ModelViewSet):
     serializer_class = ClubSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
@@ -82,10 +72,10 @@ class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
     serializer_class = ScoutSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     queryset = PlayersVideo.objects.all()
     serializer_class = VideoSerializer
-
+    permission_classes = [AllowAny]
