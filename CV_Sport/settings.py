@@ -30,8 +30,6 @@ INSTALLED_APPS = [
     'mptt',
     'corsheaders',
     'API',
-    'Accounts',
-    'registration',
 ]
 
 MIDDLEWARE = [
@@ -79,9 +77,9 @@ WSGI_APPLICATION = 'CV_Sport.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cvsportbase',
-        'USER': 'postgres',
-        'PASSWORD': 'qwerty',
+        'NAME': 'cvsportbasedatabase',
+        'USER': 'm',
+        'PASSWORD': '12345',
         'HOST': 'localhost',
         'PORT': '',
     }
