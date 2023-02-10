@@ -10,6 +10,12 @@ SECRET_KEY = 'django-insecure-*=hol@h(1kbq4bov#fug!$h@394w4y&q6hx-380fof90y2ob)a
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://localhost:8000'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'easy_thumbnails',
     'mptt',
     'corsheaders',
@@ -113,7 +120,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ORIGIN_ALLOW_ALL = True
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

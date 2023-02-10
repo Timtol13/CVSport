@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 
-router.register('registration', RegistrationAPIView)
+# router.register('registration', RegistrationAPIView.as_view())
 # router.register('login', LoginView),
 
 router.register('advanced/Player', AdvancedRegistration_Player_ApiView)
@@ -18,6 +18,8 @@ router.register('add/video', AdvancedRegistration_Video_ApiView)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('login', LoginAPIView.as_view(), name='registration'),
+    path('registration', RegisterAPIView.as_view(), name='registration'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),

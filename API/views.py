@@ -1,6 +1,8 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
@@ -8,21 +10,40 @@ from .models import *
 # from API.models import User
 from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 
-class RegistrationAPIView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+
+class LoginAPIView(APIView):
     serializer_class = UserSerializer
     filter_backends = [SearchFilter]
     search_fields = ['username']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class RegisterAPIView(APIView):
+    def post(self, request, format=None):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        email = request.data.get("email")
 
+        if username and password and email:
+            user = User.objects.create_user(username=username, password=password, email=email)
+            if user:
+                return Response({"success": "User created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error": "Failed to create a user"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "The username, password and email are required"}, status=status.HTTP_400_BAD_REQUEST)
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly]
+
 
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
