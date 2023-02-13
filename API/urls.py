@@ -17,6 +17,7 @@ router.register('add/video', AdvancedRegistration_Video_ApiView)
 
 urlpatterns = [
     path('', include(router.urls)),
+
     # path('login', LoginAPIView.as_view(), name='registration'),
 
 ]

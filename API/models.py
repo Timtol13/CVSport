@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
-from registration.models import UserData
+#from registration.models import UserData
 from multiselectfield import MultiSelectField
 
 
@@ -40,7 +41,7 @@ class Player(models.Model):
         ('B', 'Обе')
     ]
 
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     leg = models.TextField('Нога', choices=leg, blank=True, null=True)
     position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES, blank=True, null=True)
     age = models.CharField("Возраст", max_length=5, blank=True, null=True)
@@ -63,7 +64,7 @@ class Player(models.Model):
 
 
 class Agent(models.Model):
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20, blank=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True)
     patronymic = models.CharField("Отчество", max_length=30, blank=True)
@@ -80,7 +81,7 @@ class Agent(models.Model):
 
 
 class Parent(models.Model):
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20, blank=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True)
     patronymic = models.CharField("Отчество", max_length=30, blank=True)
@@ -98,7 +99,7 @@ class Parent(models.Model):
 
 
 class Trainer(models.Model):
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20, blank=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True)
     patronymic = models.CharField("Отчество", max_length=30, blank=True)
@@ -134,7 +135,7 @@ class Club(models.Model):
         ('11-12', '11-12'),
         ('13-14', '13-14'),
     ]
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     national_name = models.CharField("Национальное название клуба", max_length=20, blank=True)
     eng_name = models.CharField("Английское название клуба", max_length=30, blank=True)
     # phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
@@ -153,7 +154,7 @@ class Club(models.Model):
 
 
 class Scout(models.Model):
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField("Имя", max_length=20, blank=True)
     second_name = models.CharField("Фамилия", max_length=30, blank=True)
     patronymic = models.CharField("Отчество", max_length=30, blank=True)

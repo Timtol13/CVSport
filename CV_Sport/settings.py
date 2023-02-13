@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'CV_Sport.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'NAME': 'cvsportbase',
         'USER': 'postgres',
         'PASSWORD': 'qwerty',
         'HOST': 'localhost',
@@ -127,7 +127,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static/'
 ]
-AUTH_USER_MODEL = 'registration.UserData'
+#AUTH_USER_MODEL = 'registration.UserData'
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',

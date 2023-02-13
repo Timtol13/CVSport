@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from registration.serializers import UserSerializer
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from .models import *
@@ -25,7 +26,17 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthentic
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
+class RegisterView(APIView):
+    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
