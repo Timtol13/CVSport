@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'mptt',
     'corsheaders',
     'API',
-    'registration',
 ]
 
 MIDDLEWARE = [

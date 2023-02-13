@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from registration.serializers import UserSerializer
+
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from .models import *
