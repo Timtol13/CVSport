@@ -1,26 +1,22 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
-#from registration.models import UserData
+# from registration.models import UserData
 from multiselectfield import MultiSelectField
 
-
-
-
-
 POSITION_CHOICES = (
-    ('1', 'Вратарь'),
-    ('2', 'Центральный защитник'),
-    ('3', 'Левый защитник'),
-    ('4', 'Правый защитник'),
-    ('5', 'Центральный опорный полузащитник'),
-    ('6', 'Центральный полузащитник'),
-    ('7', 'Левый полузащитник'),
-    ('8', 'Правый полузащитник'),
-    ('9', 'Центральный нападающий'),
-    ('10', 'Правый вингер'),
-    ('11', 'Левый вингер'),
-    ('12', 'Инсайдер'),
+    ('goalkeeper', 'Вратарь'),
+    ('central_defender', 'Центральный защитник'),
+    ('left_defender', 'Левый защитник'),
+    ('right_defender', 'Правый защитник'),
+    ('central_defensive_midfielder', 'Центральный опорный полузащитник'),
+    ('central_midfielder', 'Центральный полузащитник'),
+    ('left_midfielder', 'Левый полузащитник'),
+    ('right_midfielder', 'Правый полузащитник'),
+    ('centre forward', 'Центральный нападающий'),
+    ('right_winger', 'Правый вингер'),
+    ('left_winger', 'Левый вингер'),
+    ('insider', 'Инсайдер'),
 )
 
 
@@ -34,6 +30,23 @@ POSITION_CHOICES = (
 #
 #     def __str__(self):
 #         return self.email
+
+
+class UserProfile(models.Model):
+    # role = [
+    #     ('player', 'Игрок'),
+    #     ('agent', 'Агент'),
+    #     ('club', 'Клуб'),
+    #     ('parent', 'Родитель'),
+    #     ('trainer', 'Тренер'),
+    #     ('scout', 'Скаут'),
+    # ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='user_photos', blank=True)
+    # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
+    #                                    null=True, default='player')
+
+
 class Player(models.Model):
     leg = [
         ('R', 'Правая'),

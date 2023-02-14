@@ -5,9 +5,11 @@ from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(required=False)
+    #role = serializers.MultipleChoiceField(max_length=100, required=False)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password', 'photo'] #, 'role']
 
         extra_kwargs = {
             'password': {
@@ -17,7 +19,13 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+        #user.photo = validated_data.get('photo', '')
+        user.role = validated_data.get('role', '')
+        user.save()
         return user
 
 # class UserSerializer(serializers.ModelSerializer):
