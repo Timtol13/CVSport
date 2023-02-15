@@ -43,6 +43,20 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         photo.save()
         return photo
 
+    def update(self, instance, validated_data):
+        # Валидация и сохранение фото
+        photo = validated_data.get('photo')
+        if photo:
+            instance.photo.delete()  # Удаление предыдущего фото
+            instance.photo = photo
+        instance.save()
+        return instance
+
+    def destroy(self, instance):
+        # Удаление фото
+        instance.photo.delete()
+        instance.delete()
+
 
 # class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
