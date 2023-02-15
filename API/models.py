@@ -32,7 +32,7 @@ POSITION_CHOICES = (
 #         return self.email
 
 
-class UserProfile(models.Model):
+class UserPhoto(models.Model):
     # role = [
     #     ('player', 'Игрок'),
     #     ('agent', 'Агент'),
@@ -42,7 +42,7 @@ class UserProfile(models.Model):
     #     ('scout', 'Скаут'),
     # ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='user_photos', blank=True)
+    photo = models.FileField(upload_to='user_photo', blank=True)
     # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
     #                                    null=True, default='player')
 
@@ -70,7 +70,7 @@ class Player(models.Model):
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
         return str(self.user)
@@ -86,7 +86,7 @@ class Agent(models.Model):
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     players = models.ManyToManyField(Player, related_name="agent_players", blank=True, verbose_name="Игроки агента")
 
     def __str__(self):
@@ -105,7 +105,7 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
         return str(f"{self.first_name} {self.second_name} {self.patronymic}")
@@ -124,14 +124,14 @@ class Trainer(models.Model):
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
 
     players = models.ManyToManyField(Player, related_name="trainer_players", blank=True, verbose_name="Игроки тренера")
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     # school description (ending 's' does meen 'school')
 
     country_s = models.CharField("Страна, в которой находится школа", max_length=50, blank=True)
     city_s = models.CharField("Город, в котором находится школа", max_length=50, blank=True)
     phone_s = models.CharField("Номер телефона школы", max_length=15, blank=True)
     e_mail_s = models.EmailField("E-Mail школы", blank=True)
-    photo_s = models.ImageField("Фото школы", upload_to="school_photoes", null=True, blank=True)
+    photo_s = models.FileField("Фото школы", upload_to="school_photoes", null=True, blank=True)
 
     # телефон, e-mail, фото до 10, ссылки на ютуб, и т.п. до 10
 
@@ -157,8 +157,8 @@ class Club(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
-    # players = models.ManyToManyField(Player,related_name="club_players", blank=True,verbose_name="Игроки клуба")
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    players = models.ManyToManyField(Player,related_name="club_players", blank=True,verbose_name="Игроки клуба")
     schools = models.JSONField("Школы", blank=True, null=True)
     school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True)
 
@@ -178,7 +178,7 @@ class Scout(models.Model):
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     # = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     school = models.TextField("Школы(Название, страна, город)", max_length=250, blank=True)
-    photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
+    # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
         return str(f"{self.first_name} {self.second_name} {self.patronymic}")

@@ -1,15 +1,15 @@
 from rest_framework import serializers
 from .models import *
-#from API.models import UserData
+# from API.models import UserData
 from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    photo = serializers.ImageField(required=False)
-    #role = serializers.MultipleChoiceField(max_length=100, required=False)
+    # photo = serializers.ImageField(required=False)
+    # role = serializers.MultipleChoiceField(max_length=100, required=False)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'photo'] #, 'role']
+        fields = ['id', 'username', 'email', 'password', ]  # 'photo' #, 'role']
 
         extra_kwargs = {
             'password': {
@@ -23,10 +23,26 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             password=validated_data['password']
         )
-        #user.photo = validated_data.get('photo', '')
+        # user.photo = validated_data.get('photo', '')
         user.role = validated_data.get('role', '')
         user.save()
         return user
+
+
+class UserPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPhoto
+        fields = '__all__'
+
+    def create(self, validated_data):
+        photo = UserPhoto.objects.create(
+            user=validated_data['user'],
+            photo=validated_data['photo'],
+            #role=validated_data['role'],
+        )
+        photo.save()
+        return photo
+
 
 # class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -41,8 +57,6 @@ class UserSerializer(serializers.ModelSerializer):
 #         user.set_password(validated_data['password'])
 #         user.save()
 #         return user
-
-
 
 
 class PlayerSerializer(serializers.ModelSerializer):

@@ -44,7 +44,7 @@ class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','position','age']
+    search_fields = ['first_name', 'second_name', 'patronymic', 'position', 'age']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
@@ -86,6 +86,12 @@ class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+
+
+class AdvancedRegistration_Photo_ApiView(viewsets.ModelViewSet):
+    queryset = UserPhoto.objects.all()
+    serializer_class = UserPhotoSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):

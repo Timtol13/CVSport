@@ -14,6 +14,7 @@ router.register('advanced/Parent', AdvancedRegistration_Parent_ApiView)
 router.register('advanced/Club', AdvancedRegistration_Club_ApiView)
 router.register('advanced/Scout', AdvancedRegistration_Scout_ApiView)
 router.register('add/video', AdvancedRegistration_Video_ApiView)
+router.register('add/photo', AdvancedRegistration_Photo_ApiView)
 
 urlpatterns = [
     path('', include(router.urls)),
