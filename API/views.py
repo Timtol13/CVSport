@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -92,15 +93,47 @@ class AdvancedRegistration_Photo_ApiView(viewsets.ModelViewSet):
     queryset = UserPhoto.objects.all()
     serializer_class = UserPhotoSerializer
     permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        # Get the user object corresponding to the username in the request data
+
+        try:
+            user = User.objects.get(username=request.data['user'])
+
+            print(user)
+        except User.DoesNotExist:
+            return Response({'error': 'User with username {} not found'.format(request.data['username'])},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the serializer with the request data and set the user field
+        id = user.pk
+        print(request.data)
+        request.data['user']=id
+        print(request.data)
+        serializer = UserPhotoSerializer(data=request.data)
+        serializer.is_valid()
+
+        # Call serializer.save() to create the UserPhoto object
+
+        serializer.save()
+        print(serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        print(request.user)
+        print(self.request)
+        instance = self.get_object()  #
+        print(instance)
+        serializer = self.get_serializer(instance, data=request.data, partial=False)  #
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        self.perform_update(serializer)  #
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        print(instance)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

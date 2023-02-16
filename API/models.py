@@ -41,7 +41,7 @@ class UserPhoto(models.Model):
     #     ('trainer', 'Тренер'),
     #     ('scout', 'Скаут'),
     # ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,)
     photo = models.FileField(upload_to='user_photo', blank=True)
     # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
     #                                    null=True, default='player')
