@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.conf import settings
 # from registration.models import UserData
@@ -31,6 +33,11 @@ POSITION_CHOICES = (
 #     def __str__(self):
 #         return self.email
 
+def photo_upload_to(instance, filename):
+    return 'photo/{}/{}'.format(instance.user.username, filename)
+
+def video_upload_to(instance, filename):
+    return 'video/{}/{}'.format(instance.user.username,  filename)
 
 class UserPhoto(models.Model):
     # role = [
