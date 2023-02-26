@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -12,19 +13,8 @@ from .models import *
 from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
+from ipware import get_client_ip
 
-
-# class LoginAPIView(APIView):
-#     serializer_class = UserSerializer
-#     filter_backends = [SearchFilter]
-#     search_fields = ['username']
-#     permission_classes = [AllowAny]
-#
-#     def post(self, request):
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RegisterView(APIView):
     @action(detail=False, methods=['get'], permission_classes=[IsAdminUser], filter_backends=[SearchFilter],
@@ -44,9 +34,37 @@ class RegisterView(APIView):
 class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic', 'position', 'age']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    lookup_field = 'username'
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, user__username=self.kwargs['username'])
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    @action(detail=True, methods=['put'])
+    def update_username(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        player = get_object_or_404(Player, user__username=username)  # меняем условие поиска на имя пользователя
+        # Получаем IP-адрес пользователя
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # Создаем запись о просмотре профиля
+        View.objects.get_or_create(player=player, ip=ip_address)
+        serializer = self.get_serializer(player)
+        return Response(serializer.data)
 
 
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
@@ -91,7 +109,7 @@ class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
 
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,]
 
     def get_queryset(self):
         # Get all UserPhoto objects

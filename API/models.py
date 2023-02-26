@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.conf import settings
 # from registration.models import UserData
@@ -37,6 +39,12 @@ def photo_upload_to(instance, filename):
 def video_upload_to(instance, filename):
     return 'video/{}/{}'.format(instance.user.username,  filename)
 
+class View(models.Model):
+    ip_address = models.CharField(max_length=45, blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    created_at = models.DateTimeField(auto_now_add=True)
 class UserPhoto(models.Model):
     # role = [
     #     ('player', 'Игрок'),
@@ -75,11 +83,13 @@ class Player(models.Model):
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
-
+    views = models.ManyToManyField(View, related_name="player_views", blank=True)
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
         return str(self.user)
+    def total_views(self):
+        return self.views.count()
 
 
 class Agent(models.Model):
@@ -111,7 +121,7 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-
+    views = models.ManyToManyField(View, related_name='players',verbose_name='Просмотры')
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):

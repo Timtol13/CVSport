@@ -19,5 +19,6 @@ router.register('add/video', AdvancedRegistration_Video_ApiView)
 urlpatterns = [
     path('', include(router.urls)),
     path('add/photo/<str:username>/', UserPhotoApiView.as_view({'get': 'retrieve','put':'update','delete':'destroy','post':'create'})),
+    #path('advanced/Player/<str:username>/', AdvancedRegistration_Player_ApiView.as_view({'put': 'update_username', 'delete':'destroy'}), name='player-detail')
 ]
 #urlpatterns += routerS.urls
