@@ -33,11 +33,6 @@ POSITION_CHOICES = (
 #     def __str__(self):
 #         return self.email
 
-def photo_upload_to(instance, filename):
-    return 'photo/{}/{}'.format(instance.user.username, filename)
-
-def video_upload_to(instance, filename):
-    return 'video/{}/{}'.format(instance.user.username,  filename)
 
 class UserPhoto(models.Model):
     # role = [
@@ -77,7 +72,6 @@ class Player(models.Model):
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
-
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
@@ -113,7 +107,6 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
@@ -187,7 +180,6 @@ class Scout(models.Model):
     city = models.CharField("Город", max_length=40, blank=True, null=True)
     # = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     school = models.TextField("Школы(Название, страна, город)", max_length=250, blank=True)
-
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):

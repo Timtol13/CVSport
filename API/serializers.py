@@ -37,7 +37,8 @@ class UserPhotoSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         photo = UserPhoto.objects.create(
             user=validated_data['user'],
-            photo=validated_data['photo']
+            photo=validated_data['photo'],
+            #role=validated_data['role'],
         )
         photo.save()
         return photo
