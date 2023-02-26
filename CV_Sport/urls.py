@@ -8,8 +8,7 @@ from API.views import RegisterView
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path(r'api/', include('API.urls')),
-                  #path(r'add/',include('API.urls_photo')),
+                  path('api/', include('API.urls')),
                   path('registration/',RegisterView.as_view(), name='registration'),
                   path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
                   path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

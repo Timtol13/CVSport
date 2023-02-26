@@ -37,8 +37,8 @@ class UserPhotoSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         photo = UserPhoto.objects.create(
             user=validated_data['user'],
-            photo=validated_data['photo']
-            # role=validated_data['role'],
+            photo=validated_data['photo'],
+            #role=validated_data['role'],
         )
         photo.save()
         return photo
@@ -58,6 +58,21 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         instance.delete()
 
 
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         # model = UserData
+#         model = User
+#         fields = ["id", "email", "name", "password"]
+#
+#     def create(self, validated_data):
+#         user = User.objects.create(email=validated_data['email'],
+#                                        name=validated_data['name']
+#                                        )
+#         user.set_password(validated_data['password'])
+#         user.save()
+#         return user
+
+
 class PlayerSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -65,26 +80,20 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = '__all__'
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        player = Player.objects.create(user=user, **validated_data)
+    def create(self, validation_data):
+        player = Player.objects.create(**validation_data)
         return player
-
-    def get_views_count(self, obj):
-        return obj.views.count()
 
 
 class AgentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    created_by = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = Agent
         fields = '__all__'
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        agent = Agent.objects.create(user=user, **validated_data)
+    def create(self, validation_data):
+        agent = Agent.objects.create(**validation_data)
         return agent
 
 
