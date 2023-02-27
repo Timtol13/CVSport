@@ -65,8 +65,6 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = '__all__'
 
-
-
     def get_views_count(self, obj):
         return obj.views.count()
 
