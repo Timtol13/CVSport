@@ -2,6 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -31,11 +32,9 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 
-class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+class AdvancedRegistration_ApiView(viewsets.ModelViewSet):
     lookup_field = 'username'
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
@@ -81,12 +80,20 @@ class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class AdvancedRegistration_Player_ApiView(AdvancedRegistration_ApiView):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['first_name', 'second_name', 'patronymic']
+    lookup_field = 'username'
+
+
 class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
 class AdvancedRegistration_Trainer_ApiView(viewsets.ModelViewSet):
@@ -109,7 +116,7 @@ class AdvancedRegistration_Club_ApiView(viewsets.ModelViewSet):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['national_name', 'eng_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
 
@@ -123,11 +130,23 @@ class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
 
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = UserPhoto.objects.all()
+    parser_classes = [MultiPartParser]
 
     def get_queryset(self):
-        # Get all UserPhoto objects
-        return UserPhoto.objects.all()
+        if 'username' in self.kwargs:
+            # Если задан username, вернуть фотографии только для этого пользователя
+            return UserPhoto.objects.filter(user__username=self.kwargs['username'])
+        else:
+            # Иначе, вернуть все фотографии
+            return UserPhoto.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        # Метод list будет обслуживать GET-запросы к коллекции фотографий
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         # Get the user object corresponding to the username in the request data
@@ -148,19 +167,37 @@ class UserPhotoApiView(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # def update(self, request, *args, **kwargs):
+    #     # Get the UserPhoto object associated with the username in the URL
+    #     try:
+    #         user_photo = UserPhoto.objects.get(user__username=kwargs['username'])
+    #         user = User.objects.get(username=kwargs['username'])
+    #     except UserPhoto.DoesNotExist:
+    #         return Response({'error': 'User photo for user {} not found'.format(kwargs['username'])},
+    #                         status=status.HTTP_404_NOT_FOUND)
+    #     request.data['user'] = user.pk
+    #     serializer = UserPhotoSerializer(user_photo, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
     def update(self, request, *args, **kwargs):
         # Get the UserPhoto object associated with the username in the URL
         try:
-            user_photo = UserPhoto.objects.get(user__username=kwargs['username'])
             user = User.objects.get(username=kwargs['username'])
+            user_photo = UserPhoto.objects.get(user=user.pk)
         except UserPhoto.DoesNotExist:
             return Response({'error': 'User photo for user {} not found'.format(kwargs['username'])},
                             status=status.HTTP_404_NOT_FOUND)
+        if 'photo' not in request.data:
+            serializer = UserPhotoSerializer(user_photo)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         request.data['user'] = user.pk
         serializer = UserPhotoSerializer(user_photo, data=request.data)
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
+        print('Serializer data:', serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):

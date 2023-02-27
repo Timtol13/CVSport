@@ -2,6 +2,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.signals import pre_delete, pre_save
+from django.dispatch import receiver
+import os
 from django.conf import settings
 # from registration.models import UserData
 from multiselectfield import MultiSelectField
@@ -36,8 +39,10 @@ POSITION_CHOICES = (
 def photo_upload_to(instance, filename):
     return 'photo/{}/{}'.format(instance.user.username, filename)
 
+
 def video_upload_to(instance, filename):
-    return 'video/{}/{}'.format(instance.user.username,  filename)
+    return 'video/{}/{}'.format(instance.user.username, filename)
+
 
 class View(models.Model):
     ip_address = models.CharField(max_length=45, blank=True, null=True)
@@ -45,6 +50,8 @@ class View(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     created_at = models.DateTimeField(auto_now_add=True)
+
+
 class UserPhoto(models.Model):
     # role = [
     #     ('player', 'Игрок'),
@@ -58,6 +65,14 @@ class UserPhoto(models.Model):
     photo = models.ImageField(upload_to=photo_upload_to, blank=True)
     # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
     #                                    null=True, default='player')
+@receiver(pre_delete, sender=UserPhoto)
+def userphoto_delete(sender, instance, **kwargs):
+    # Удаляем файл при удалении объекта UserPhoto
+    if instance.photo:
+        if os.path.isfile(instance.photo.path):
+            os.remove(instance.photo.path)
+
+
 
 
 class Player(models.Model):
@@ -84,13 +99,21 @@ class Player(models.Model):
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     views = models.ManyToManyField(View, related_name="player_views", blank=True)
+
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
         return str(self.user)
+
     def total_views(self):
         return self.views.count()
 
+class PlayersVideo(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, blank=True, null=True)
+    file = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
+
+    def __str__(self):
+        return str(self.file.name)
 
 class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -121,7 +144,8 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-    views = models.ManyToManyField(View, related_name='players',verbose_name='Просмотры')
+    views = models.ManyToManyField(View, related_name='players', verbose_name='Просмотры')
+
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):
@@ -200,11 +224,3 @@ class Scout(models.Model):
 
     def __str__(self):
         return str(f"{self.first_name} {self.second_name} {self.patronymic}")
-
-
-class PlayersVideo(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, blank=True, null=True)
-    file = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
-
-    def __str__(self):
-        return str(self.file.name)

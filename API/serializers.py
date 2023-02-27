@@ -71,7 +71,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 class AgentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    created_by = serializers.CharField(source='user.username', read_only=True)
+
 
     class Meta:
         model = Agent
