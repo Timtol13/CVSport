@@ -51,9 +51,23 @@ class AdvancedRegistration_Player_ApiView(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_player = Player.objects.filter(user=user).first()
+        if existing_player:
+            return Response({'error': 'This user already has a player.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
+        user = request.user
+        players = Player.objects.filter(user=user)
+        for player in players:
+            self.perform_destroy(player)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def retrieve(self, request, *args, **kwargs):
@@ -109,7 +123,7 @@ class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
 
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         # Get all UserPhoto objects
@@ -124,7 +138,7 @@ class UserPhotoApiView(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Create the serializer with the request data and set the user field
-        request.data['user']= user.pk
+        request.data['user'] = user.pk
         serializer = UserPhotoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['user'] = user
@@ -166,6 +180,7 @@ class UserPhotoApiView(viewsets.ModelViewSet):
         user_photo.delete()
         return Response({'message': 'User photo for user {} has been deleted'.format(kwargs['username'])},
                         status=status.HTTP_204_NO_CONTENT)
+
 
 # class AdvancedRegistration_Photo_ApiView(viewsets.ModelViewSet):
 #     queryset = UserPhoto.objects.all()
