@@ -14,11 +14,12 @@ router.register('advanced/Parent', AdvancedRegistration_Parent_ApiView)
 router.register('advanced/Club', AdvancedRegistration_Club_ApiView)
 router.register('advanced/Scout', AdvancedRegistration_Scout_ApiView)
 router.register('add/video', AdvancedRegistration_Video_ApiView)
+router.register('add/photo', AdvancedRegistration_Video_ApiView)
 #routerS = SimpleRouter()
 #routerS.register('user_photos', UserPhotoApiView, basename='userphoto')
 urlpatterns = [
     path('', include(router.urls)),
     path('add/photo/<str:username>/', UserPhotoApiView.as_view({'get': 'retrieve','put':'update','delete':'destroy','post':'create'})),
-    #path('advanced/Player/<str:username>/', AdvancedRegistration_Player_ApiView.as_view({'put': 'update_username', 'delete':'destroy'}), name='player-detail')
+    path('advanced/Player/<str:username>/', AdvancedRegistration_Player_ApiView.as_view({'put': 'update_username', 'delete':'destroy'}), name='player-detail')
 ]
 #urlpatterns += routerS.urls

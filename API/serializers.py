@@ -65,10 +65,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = '__all__'
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        player = Player.objects.create(user=user, **validated_data)
-        return player
+
 
     def get_views_count(self, obj):
         return obj.views.count()
