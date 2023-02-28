@@ -265,7 +265,7 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         # Get the PlayersVideo object associated with the username in the URL
         try:
-            user_video = PlayersVideo.objects.get(user__username=kwargs['username'])
+            user_video = PlayersVideo.objects.get(user__username=kwargs['username'],pk=kwargs['pk'])
         except PlayersVideo.DoesNotExist:
             return Response({'error': 'Video for user {} not found'.format(kwargs['username'])},
                             status=status.HTTP_404_NOT_FOUND)
