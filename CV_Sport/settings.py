@@ -79,6 +79,13 @@ DATABASES = {
         'PASSWORD': '12345',
         'HOST': 'localhost',
         'PORT': '',
+    },'test': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cvsportbase',
+        'USER': 'postgres',
+        'PASSWORD': 'qwerty',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 # DATABASES = {

@@ -206,9 +206,6 @@ class UserPhotoApiView(viewsets.ModelViewSet):
                         status=status.HTTP_204_NO_CONTENT)
 
 
-
-
-
 class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     queryset = PlayersVideo.objects.all()
     serializer_class = VideoSerializer
@@ -255,23 +252,31 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
     def retrieve(self, request, *args, **kwargs):
         # Get the PlayersVideo objects associated with the username in the URL
         queryset = PlayersVideo.objects.filter(user__username=kwargs['username'])
         serializer = VideoSerializer(queryset, many=True)
+        if serializer.data == []:
+            return Response(
+                {'message': 'There are not video for user={}'.format(kwargs['username'])}, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         # Get the PlayersVideo object associated with the username in the URL
         try:
-            user_video = PlayersVideo.objects.get(user__username=kwargs['username'])
+            if 'pk' in self.kwargs:
+                user_video = PlayersVideo.objects.get(user__username=kwargs['username'], pk=kwargs['pk'])
+                pk = kwargs['pk']
+            else:
+                user_video = PlayersVideo.objects.filter(user__username=kwargs['username'])
+                pk = []
+                for video in user_video:
+                    pk.append(video.pk)
+                    video.delete()
+
         except PlayersVideo.DoesNotExist:
             return Response({'error': 'Video for user {} not found'.format(kwargs['username'])},
                             status=status.HTTP_404_NOT_FOUND)
 
-        user_video.delete()
-        return Response({'message': 'Video for user {} has been deleted'.format(kwargs['username'])},
+        return Response({'message': 'Video (id={}) for user {} has been deleted'.format(pk, kwargs['username'])},
                         status=status.HTTP_204_NO_CONTENT)
-
-

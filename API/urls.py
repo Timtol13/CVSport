@@ -21,11 +21,15 @@ urlpatterns = [
     path('add/photo/<str:username>/',
          UserPhotoApiView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'post': 'create'}),
          name='user-photo'),
-    path('add/video/', AdvancedRegistration_Video_ApiView.as_view({'get': 'list'}), name='user-photo-list'),
+    path('add/video/', AdvancedRegistration_Video_ApiView.as_view({'get': 'list'}), name='user-video-list'),
     path('add/video/<str:username>/',
          AdvancedRegistration_Video_ApiView.as_view(
-             {'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'post': 'create'}),
-         name='user-photo'),
+             {'get': 'retrieve', 'put': 'update', 'post': 'create','delete': 'destroy'}),
+         name='user-video'),
+    path('add/video/<str:username>/<int:pk>/',
+         AdvancedRegistration_Video_ApiView.as_view(
+             {'delete': 'destroy'}),
+         name='user-video'),
     path('advanced/Player/<str:username>/',
          AdvancedRegistration_Player_ApiView.as_view({'put': 'update_username', 'delete': 'destroy'}),
          name='player-detail'),
