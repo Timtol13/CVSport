@@ -119,6 +119,12 @@ class PlayersVideo(models.Model):
     title = models.CharField("Заголовок", max_length=255,blank=True)
     def __str__(self):
         return str(self.video.name)
+@receiver(pre_delete, sender=PlayersVideo)
+def userphoto_delete(sender, instance, **kwargs):
+    # Удаляем файл при удалении объекта UserPhoto
+    if instance.video:
+        if os.path.isfile(instance.video.path):
+            os.remove(instance.video.path)
 
 class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

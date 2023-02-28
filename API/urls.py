@@ -24,7 +24,7 @@ urlpatterns = [
     path('add/video/', AdvancedRegistration_Video_ApiView.as_view({'get': 'list'}), name='user-video-list'),
     path('add/video/<str:username>/',
          AdvancedRegistration_Video_ApiView.as_view(
-             {'get': 'retrieve', 'put': 'update', 'post': 'create'}),
+             {'get': 'retrieve', 'put': 'update', 'post': 'create','delete': 'destroy'}),
          name='user-video'),
     path('add/video/<str:username>/<int:pk>/',
          AdvancedRegistration_Video_ApiView.as_view(
