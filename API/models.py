@@ -1,3 +1,4 @@
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -6,6 +7,7 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 import os
 from django.conf import settings
+from django.utils import timezone
 # from registration.models import UserData
 from multiselectfield import MultiSelectField
 
@@ -109,17 +111,20 @@ class Player(models.Model):
         return self.views.count()
 
 class PlayersVideo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, blank=True, null=True)
-    file = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
-
+    video = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
+    description = models.TextField(blank=True, null=True, )
+    created_at = models.DateTimeField(auto_now_add=True)
+    title = models.CharField("Заголовок", max_length=255,blank=True)
     def __str__(self):
-        return str(self.file.name)
+        return str(self.video.name)
 
 class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -134,9 +139,9 @@ class Agent(models.Model):
 
 class Parent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -154,9 +159,9 @@ class Parent(models.Model):
 
 class Trainer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -190,8 +195,8 @@ class Club(models.Model):
         ('13-14', '13-14'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    national_name = models.CharField("Национальное название клуба", max_length=20, blank=True)
-    eng_name = models.CharField("Английское название клуба", max_length=30, blank=True)
+    national_name = models.CharField("Национальное название клуба", max_length=20, blank=True,null=True)
+    eng_name = models.CharField("Английское название клуба", max_length=30, blank=True,null=True)
     # phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -209,9 +214,9 @@ class Club(models.Model):
 
 class Scout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
