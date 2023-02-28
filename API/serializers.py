@@ -72,15 +72,9 @@ class PlayerSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-
     class Meta:
         model = Agent
         fields = '__all__'
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        agent = Agent.objects.create(user=user, **validated_data)
-        return agent
 
 
 class TrainerSerializer(serializers.ModelSerializer):
@@ -90,10 +84,6 @@ class TrainerSerializer(serializers.ModelSerializer):
         model = Trainer
         fields = '__all__'
 
-    def create(self, validation_data):
-        trainer = Trainer.objects.create(**validation_data)
-        return trainer
-
 
 class ParentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -101,10 +91,6 @@ class ParentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Parent
         fields = '__all__'
-
-    def create(self, validation_data):
-        parent = Parent.objects.create(**validation_data)
-        return parent
 
 
 class ClubSerializer(serializers.ModelSerializer):
@@ -114,10 +100,6 @@ class ClubSerializer(serializers.ModelSerializer):
         model = Club
         fields = '__all__'
 
-    def create(self, validation_data):
-        club = Club.objects.create(**validation_data)
-        return club
-
 
 class ScoutSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -126,16 +108,40 @@ class ScoutSerializer(serializers.ModelSerializer):
         model = Scout
         fields = '__all__'
 
-    def create(self, validation_data):
-        scout = Scout.objects.create(**validation_data)
-        return scout
-
 
 class VideoSerializer(serializers.ModelSerializer):
+    #user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = PlayersVideo
         fields = '__all__'
 
-    def create(self, validation_data):
-        video = PlayersVideo.objects.create(**validation_data)
+    def create(self, validated_data):
+        player = Player.objects.get(user=validated_data['user'])
+        video = PlayersVideo.objects.create(user=validated_data['user'],
+                                            player=player,
+                                            video=validated_data['video']
+                                            # role=validated_data['role'],
+                                            )
+        video.save()
         return video
+
+    # def update(self, instance, validated_data):
+    #     # Валидация и сохранение фото
+    #     photo = validated_data.get('photo')
+    #     if photo:
+    #         instance.photo.delete()  # Удаление предыдущего фото
+    #         instance.photo = photo
+    #     instance.save()
+    #     return instance
+    #
+    # def destroy(self, instance):
+    #     # Удаление фото
+    #     instance.photo.delete()
+    #     instance.delete()
+
+    def get_player(self, obj):
+        # Получаем данные игрока, связанного с этим видео
+        player = obj.player
+        # Сериализуем игрока и возвращаем его данные
+        return PlayerSerializer(player).data

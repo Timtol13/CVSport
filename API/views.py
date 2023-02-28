@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 from ipware import get_client_ip
+from django.contrib.auth.models import Group
 
 
 class RegisterView(APIView):
@@ -167,20 +168,6 @@ class UserPhotoApiView(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # def update(self, request, *args, **kwargs):
-    #     # Get the UserPhoto object associated with the username in the URL
-    #     try:
-    #         user_photo = UserPhoto.objects.get(user__username=kwargs['username'])
-    #         user = User.objects.get(username=kwargs['username'])
-    #     except UserPhoto.DoesNotExist:
-    #         return Response({'error': 'User photo for user {} not found'.format(kwargs['username'])},
-    #                         status=status.HTTP_404_NOT_FOUND)
-    #     request.data['user'] = user.pk
-    #     serializer = UserPhotoSerializer(user_photo, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
     def update(self, request, *args, **kwargs):
         # Get the UserPhoto object associated with the username in the URL
         try:
@@ -197,7 +184,7 @@ class UserPhotoApiView(viewsets.ModelViewSet):
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        print('Serializer data:', serializer.data)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
@@ -219,59 +206,72 @@ class UserPhotoApiView(viewsets.ModelViewSet):
                         status=status.HTTP_204_NO_CONTENT)
 
 
-# class AdvancedRegistration_Photo_ApiView(viewsets.ModelViewSet):
-#     queryset = UserPhoto.objects.all()
-#     serializer_class = UserPhotoSerializer
-#     permission_classes = [IsAuthenticated]
-#
-#     def create(self, request, *args, **kwargs):
-#         # Get the user object corresponding to the username in the request data
-#         print(request)
-#         instance = self.get_object()
-#
-#         try:
-#             user = User.objects.get(username=request.data['user'])
-#
-#             print(user)
-#         except User.DoesNotExist:
-#             return Response({'error': 'User with username {} not found'.format(request.data['username'])},
-#                             status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Create the serializer with the request data and set the user field
-#         id = user.pk
-#         print(request.data)
-#         request.data['user']=id
-#         print(request.data)
-#         serializer = UserPhotoSerializer(data=request.data)
-#         serializer.is_valid()
-#
-#         # Call serializer.save() to create the UserPhoto object
-#
-#         serializer.save()
-#         print(serializer.data)
-#
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#
-#
-#     def update(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         print(request.user)
-#         print(request)
-#         print(*args)
-#         print(**kwargs)
-#         serializer = self.get_serializer(instance, data=request.data, partial=False)
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_update(serializer)
-#         return Response(serializer.data)
-#
-#     def destroy(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         self.perform_destroy(instance)
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     queryset = PlayersVideo.objects.all()
     serializer_class = VideoSerializer
     permission_classes = [AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        if 'username' in self.kwargs:
+            # Если задан username, вернуть видео только для этого пользователя
+            user = User.objects.get(username=self.kwargs['username'])
+            return PlayersVideo.objects.filter(user=user)
+        else:
+            # Иначе, вернуть все фотографии
+            return PlayersVideo.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        # Метод list будет обслуживать GET-запросы к коллекции фотографий
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        # Get the user object corresponding to the username in the request data
+        try:
+            user = User.objects.get(username=kwargs['username'])
+            player = Player.objects.get(user=user)
+        except User.DoesNotExist:
+            return Response({'error': 'User with username {} not found'.format(request.data['username'])},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # except Player.DoesNotExist:
+        #     return Response({'error': 'Player to username {} not found'.format(request.data['username'])},
+        #                     status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the serializer with the request data and set the user field
+        request.data['user'] = user.pk
+        request.data['player'] = player.pk
+        serializer = VideoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data['user'] = user
+        serializer.validated_data['player'] = player
+
+        # Call serializer.save() to create the UserPhoto object
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    def retrieve(self, request, *args, **kwargs):
+        # Get the PlayersVideo objects associated with the username in the URL
+        queryset = PlayersVideo.objects.filter(user__username=kwargs['username'])
+        serializer = VideoSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        # Get the PlayersVideo object associated with the username in the URL
+        try:
+            user_video = PlayersVideo.objects.get(user__username=kwargs['username'])
+        except PlayersVideo.DoesNotExist:
+            return Response({'error': 'Video for user {} not found'.format(kwargs['username'])},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        user_video.delete()
+        return Response({'message': 'Video for user {} has been deleted'.format(kwargs['username'])},
+                        status=status.HTTP_204_NO_CONTENT)
+
+
