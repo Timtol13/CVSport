@@ -51,6 +51,16 @@ class AdvancedRegistration_ApiView(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+
+
+class AdvancedRegistration_Player_ApiView(AdvancedRegistration_ApiView):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['first_name', 'second_name', 'patronymic']
+    lookup_field = 'username'
+
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_player = Player.objects.filter(user=user).first()
@@ -73,61 +83,189 @@ class AdvancedRegistration_ApiView(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         username = kwargs.get('username')
         player = get_object_or_404(Player, user__username=username)  # меняем условие поиска на имя пользователя
-        # Получаем IP-адрес пользователя
-        ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
-        # Создаем запись о просмотре профиля
-        View.objects.get_or_create(player=player, ip=ip_address)
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(player=player, ip=ip_address)
         serializer = self.get_serializer(player)
         return Response(serializer.data)
 
 
-class AdvancedRegistration_Player_ApiView(AdvancedRegistration_ApiView):
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
-    filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
-    lookup_field = 'username'
-
-
-class AdvancedRegistration_Agent_ApiView(viewsets.ModelViewSet):
+class AdvancedRegistration_Agent_ApiView(AdvancedRegistration_ApiView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_agent = Agent.objects.filter(user=user).first()
+        if existing_agent:
+            return Response({'error': 'This user already has a agent.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        agents = Agent.objects.filter(user=user)
+        for agent in agents:
+            self.perform_destroy(agent)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        agent = get_object_or_404(Agent, user__username=username)  # меняем условие поиска на имя пользователя
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(agent=agent, ip=ip_address)
+        serializer = self.get_serializer(agent)
+        return Response(serializer.data)
 
 
-class AdvancedRegistration_Trainer_ApiView(viewsets.ModelViewSet):
+class AdvancedRegistration_Trainer_ApiView(AdvancedRegistration_ApiView):
     queryset = Trainer.objects.all()
     serializer_class = TrainerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_trainer = Trainer.objects.filter(user=user).first()
+        if existing_trainer:
+            return Response({'error': 'This user already has a trainer.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        trainers = Trainer.objects.filter(user=user)
+        for trainer in trainers:
+            self.perform_destroy(trainer)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        trainer = get_object_or_404(Trainer, user__username=username)  # меняем условие поиска на имя пользователя
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(trainer=trainer, ip=ip_address)
+        serializer = self.get_serializer(trainer)
+        return Response(serializer.data)
 
 
-class AdvancedRegistration_Parent_ApiView(viewsets.ModelViewSet):
+class AdvancedRegistration_Parent_ApiView(AdvancedRegistration_ApiView):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_parent = Parent.objects.filter(user=user).first()
+        if existing_parent:
+            return Response({'error': 'This user already has a parent.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        parents = Parent.objects.filter(user=user)
+        for parent in parents:
+            self.perform_destroy(parent)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class AdvancedRegistration_Club_ApiView(viewsets.ModelViewSet):
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        parent = get_object_or_404(Parent, user__username=username)  # меняем условие поиска на имя пользователя
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(parent=parent, ip=ip_address)
+        serializer = self.get_serializer(parent)
+        return Response(serializer.data)
+
+class AdvancedRegistration_Club_ApiView(AdvancedRegistration_ApiView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['national_name', 'eng_name', 'patronymic']
+    search_fields = ['national_name', 'eng_name']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_club = Club.objects.filter(user=user).first()
+        if existing_club:
+            return Response({'error': 'This user already has a club.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        clubs = Club.objects.filter(user=user)
+        for club in clubs:
+            self.perform_destroy(club)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class AdvancedRegistration_Scout_ApiView(viewsets.ModelViewSet):
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        club = get_object_or_404(Club, user__username=username)  # меняем условие поиска на имя пользователя
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(club=club, ip=ip_address)
+        serializer = self.get_serializer(club)
+        return Response(serializer.data)
+
+class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
     queryset = Scout.objects.all()
     serializer_class = ScoutSerializer
     filter_backends = [SearchFilter]
     search_fields = ['first_name', 'second_name', 'patronymic']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        existing_scout = Scout.objects.filter(user=user).first()
+        if existing_scout:
+            return Response({'error': 'This user already has a scout.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        scouts = Scout.objects.filter(user=user)
+        for scout in scouts:
+            self.perform_destroy(scout)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        username = kwargs.get('username')
+        scout = get_object_or_404(Scout, user__username=username)  # меняем условие поиска на имя пользователя
+        # # Получаем IP-адрес пользователя
+        # ip_address = request.META.get('HTTP_X_FORWARDED_FOR') or request.META.get('REMOTE_ADDR')
+        # # Создаем запись о просмотре профиля
+        # View.objects.get_or_create(scout=scout, ip=ip_address)
+        serializer = self.get_serializer(scout)
+        return Response(serializer.data)
 
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer

@@ -5,16 +5,12 @@ from rest_framework.routers import SimpleRouter
 
 router = DefaultRouter()
 
-# router.register('registration', RegistrationAPIView.as_view())
-# router.register('login', LoginView),
-
 router.register('advanced/Player', AdvancedRegistration_Player_ApiView)
 router.register('advanced/Agent', AdvancedRegistration_Agent_ApiView)
 router.register('advanced/Trainer', AdvancedRegistration_Trainer_ApiView)
 router.register('advanced/Parent', AdvancedRegistration_Parent_ApiView)
 router.register('advanced/Club', AdvancedRegistration_Club_ApiView)
 router.register('advanced/Scout', AdvancedRegistration_Scout_ApiView)
-# router.register('add/video', AdvancedRegistration_Video_ApiView)
 urlpatterns = [
     path('', include(router.urls)),
     path('add/photo/', UserPhotoApiView.as_view({'get': 'list'}), name='user-photo-list'),
@@ -49,4 +45,3 @@ urlpatterns = [
          AdvancedRegistration_Trainer_ApiView.as_view({'put': 'update_username', 'delete': 'destroy'}),
          name='trainer-detail')
 ]
-# urlpatterns += routerS.urls
