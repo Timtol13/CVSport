@@ -155,7 +155,7 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-    views = models.ManyToManyField(View, related_name='players', verbose_name='Просмотры')
+    views = models.ManyToManyField(View, related_name='players', verbose_name='Просмотры',blank=True)
 
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
@@ -212,7 +212,7 @@ class Club(models.Model):
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     players = models.ManyToManyField(Player, related_name="club_players", blank=True, verbose_name="Игроки клуба")
     schools = models.JSONField("Школы", blank=True, null=True)
-    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True)
+    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True,null=True)
 
     def __str__(self):
         return str(f"{self.national_name} {self.eng_name} ")
