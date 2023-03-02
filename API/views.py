@@ -58,7 +58,7 @@ class AdvancedRegistration_Player_ApiView(AdvancedRegistration_ApiView):
     serializer_class = PlayerSerializer
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
     lookup_field = 'username'
 
     def create(self, request, *args, **kwargs):
@@ -95,7 +95,7 @@ class AdvancedRegistration_Agent_ApiView(AdvancedRegistration_ApiView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_agent = Agent.objects.filter(user=user).first()
@@ -130,7 +130,7 @@ class AdvancedRegistration_Trainer_ApiView(AdvancedRegistration_ApiView):
     queryset = Trainer.objects.all()
     serializer_class = TrainerSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -166,7 +166,7 @@ class AdvancedRegistration_Parent_ApiView(AdvancedRegistration_ApiView):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -201,7 +201,7 @@ class AdvancedRegistration_Club_ApiView(AdvancedRegistration_ApiView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['national_name', 'eng_name']
+    search_fields = ['national_name', 'eng_name','user__username']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -236,7 +236,7 @@ class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
     queryset = Scout.objects.all()
     serializer_class = ScoutSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic']
+    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     def create(self, request, *args, **kwargs):
         user = request.user
