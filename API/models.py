@@ -101,6 +101,7 @@ class Player(models.Model):
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     views = models.ManyToManyField(View, related_name="player_views", blank=True)
+    subscribe = models.IntegerField("Количество видео",blank=True,default=1)
 
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
