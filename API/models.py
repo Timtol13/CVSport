@@ -103,6 +103,7 @@ class Player(models.Model):
     views = models.ManyToManyField(View, related_name="player_views", blank=True)
     subscribe = models.IntegerField("Количество видео",blank=True,default=1)
 
+
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
     def __str__(self):

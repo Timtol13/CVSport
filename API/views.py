@@ -15,9 +15,39 @@ from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 from ipware import get_client_ip
-from django.contrib.auth.models import Group
 
 
+from rest_framework.pagination import PageNumberPagination
+
+
+# class CustomPagination(PageNumberPagination):
+#     page_size = 20
+#     page_size_query_param = 'page_size'
+#     max_page_size = 100
+#
+#
+# class MultiModelAPIView(APIView):
+#     pagination_class = CustomPagination
+#
+#     def get(self, request, format=None):
+#         model1_data = Player.objects.all()
+#         model2_data = Agent.objects.all()
+#         model3_data = Club.objects.all()
+#         model4_data = Trainer.objects.all()
+#
+#         serializer1 = PlayerSerializer(model1_data, many=True)
+#         serializer2 = AgentSerializer(model2_data, many=True)
+#         serializer3 = ClubSerializer(model3_data, many=True)
+#         serializer4 = TrainerSerializer(model4_data, many=True)
+#         data = {
+#             "model1_data": serializer1.data,
+#             "model2_data": serializer2.data,
+#             "model3_data": serializer3.data,
+#             "model4_data": serializer4.data,
+#             }
+#         paginated_queryset = self.paginate_queryset(data)
+#
+#         return self.get_paginated_response(paginated_queryset)
 class RegisterView(APIView):
     @action(detail=False, methods=['get'], permission_classes=[IsAdminUser], filter_backends=[SearchFilter],
             search_fields=['username'])
@@ -267,11 +297,16 @@ class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
         serializer = self.get_serializer(scout)
         return Response(serializer.data)
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = UserPhoto.objects.all()
     parser_classes = [MultiPartParser]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         if 'username' in self.kwargs:
@@ -284,8 +319,9 @@ class UserPhotoApiView(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         # Метод list будет обслуживать GET-запросы к коллекции фотографий
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         # Get the user object corresponding to the username in the request data
@@ -349,7 +385,7 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     serializer_class = VideoSerializer
     permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
-
+    pagination_class = StandardResultsSetPagination
     def get_queryset(self):
         if 'username' in self.kwargs:
             # Если задан username, вернуть видео только для этого пользователя
@@ -358,12 +394,14 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
         else:
             # Иначе, вернуть все фотографии
             return PlayersVideo.objects.all()
-
     def list(self, request, *args, **kwargs):
         # Метод list будет обслуживать GET-запросы к коллекции фотографий
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
 
     def create(self, request, *args, **kwargs):
         # Get the user object corresponding to the username in the request data
