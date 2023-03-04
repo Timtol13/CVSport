@@ -1,5 +1,6 @@
 
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -53,7 +54,8 @@ class View(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     created_at = models.DateTimeField(auto_now_add=True)
 
-
+class User(AbstractUser):
+    username = models.CharField(max_length=150, unique=True)
 class UserPhoto(models.Model):
     # role = [
     #     ('player', 'Игрок'),
@@ -63,7 +65,7 @@ class UserPhoto(models.Model):
     #     ('trainer', 'Тренер'),
     #     ('scout', 'Скаут'),
     # ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE, )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, to_field='username')
     photo = models.ImageField(upload_to=photo_upload_to, blank=True)
     # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
     #                                    null=True, default='player')
@@ -84,7 +86,7 @@ class Player(models.Model):
         ('B', 'Обе')
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,to_field='username', blank=True, null=True)
     leg = models.TextField('Нога', choices=leg, blank=True, null=True)
     position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES, blank=True, null=True)
     age = models.CharField("Возраст", max_length=5, blank=True, null=True)
@@ -113,7 +115,7 @@ class Player(models.Model):
         return self.views.count()
 
 class PlayersVideo(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username', blank=True, null=True)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, blank=True, null=True)
     video = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
     description = models.TextField(blank=True, null=True, )
