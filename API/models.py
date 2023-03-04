@@ -39,11 +39,11 @@ POSITION_CHOICES = (
 #         return self.email
 
 def photo_upload_to(instance, filename):
-    return 'photo/{}/{}'.format(instance.user.username, filename)
+    return 'data/{}/photo/{}'.format(instance.user.username, filename)
 
 
 def video_upload_to(instance, filename):
-    return 'video/{}/{}'.format(instance.user.username, filename)
+    return 'data/{}/video/{}'.format(instance.user.username, filename)
 
 
 class View(models.Model):
