@@ -11,8 +11,10 @@ router.register('advanced/Trainer', AdvancedRegistration_Trainer_ApiView)
 router.register('advanced/Parent', AdvancedRegistration_Parent_ApiView)
 router.register('advanced/Club', AdvancedRegistration_Club_ApiView)
 router.register('advanced/Scout', AdvancedRegistration_Scout_ApiView)
+
 urlpatterns = [
     path('', include(router.urls)),
+    # path('all/', MultiModelAPIView.as_view()),
     path('add/photo/', UserPhotoApiView.as_view({'get': 'list'}), name='user-photo-list'),
     path('add/photo/<str:username>/',
          UserPhotoApiView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'post': 'create'}),
