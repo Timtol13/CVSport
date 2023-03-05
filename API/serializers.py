@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
-# from API.models import UserData
-from django.contrib.auth.models import User
+from API.models import User
+#from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -43,19 +43,19 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         photo.save()
         return photo
 
-    def update(self, instance, validated_data):
-        # Валидация и сохранение фото
-        photo = validated_data.get('photo')
-        if photo:
-            instance.photo.delete()  # Удаление предыдущего фото
-            instance.photo = photo
-        instance.save()
-        return instance
-
-    def destroy(self, instance):
-        # Удаление фото
-        instance.photo.delete()
-        instance.delete()
+    # def update(self, instance, validated_data):
+    #     # Валидация и сохранение фото
+    #     photo = validated_data.get('photo')
+    #     if photo:
+    #         instance.photo.delete()  # Удаление предыдущего фото
+    #         instance.photo = photo
+    #     instance.save()
+    #     return instance
+    #
+    # def destroy(self, instance):
+    #     # Удаление фото
+    #     instance.photo.delete()
+    #     instance.delete()
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -116,32 +116,31 @@ class VideoSerializer(serializers.ModelSerializer):
         model = PlayersVideo
         fields = '__all__'
 
-    def create(self, validated_data):
-        player = Player.objects.get(user=validated_data['user'])
-        video = PlayersVideo.objects.create(user=validated_data['user'],
-                                            player=player,
-                                            video=validated_data['video']
-                                            # role=validated_data['role'],
-                                            )
-        video.save()
-        return video
-
-    # def update(self, instance, validated_data):
-    #     # Валидация и сохранение фото
-    #     photo = validated_data.get('photo')
-    #     if photo:
-    #         instance.photo.delete()  # Удаление предыдущего фото
-    #         instance.photo = photo
-    #     instance.save()
-    #     return instance
+    # def create(self, validated_data):
+    #     video = PlayersVideo.objects.create(user=validated_data['user'],
+    #                                         player=validated_data['player'],
+    #                                         video=validated_data['video']
+    #                                         # role=validated_data['role'],
+    #                                         )
+    #     video.save()
+    #     return video
     #
-    # def destroy(self, instance):
-    #     # Удаление фото
-    #     instance.photo.delete()
-    #     instance.delete()
-
-    def get_player(self, obj):
-        # Получаем данные игрока, связанного с этим видео
-        player = obj.player
-        # Сериализуем игрока и возвращаем его данные
-        return PlayerSerializer(player).data
+    # # def update(self, instance, validated_data):
+    # #     # Валидация и сохранение фото
+    # #     photo = validated_data.get('photo')
+    # #     if photo:
+    # #         instance.photo.delete()  # Удаление предыдущего фото
+    # #         instance.photo = photo
+    # #     instance.save()
+    # #     return instance
+    # #
+    # # def destroy(self, instance):
+    # #     # Удаление фото
+    # #     instance.photo.delete()
+    # #     instance.delete()
+    #
+    # def get_player(self, obj):
+    #     # Получаем данные игрока, связанного с этим видео
+    #     player = obj.player
+    #     # Сериализуем игрока и возвращаем его данные
+    #     return PlayerSerializer(player).data
