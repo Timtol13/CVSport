@@ -298,7 +298,7 @@ class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
         return Response(serializer.data)
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 1
+    page_size = 20
     page_size_query_param = 'page_size'
     max_page_size = 100
 class UserPhotoApiView(viewsets.ModelViewSet):
