@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     # role = serializers.MultipleChoiceField(max_length=100, required=False)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', ]  # 'photo' #, 'role']
+        fields = ['id', 'username', 'email', 'password', 'role']  # 'photo']
 
         extra_kwargs = {
             'password': {

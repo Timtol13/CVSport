@@ -1,5 +1,4 @@
-
-#from django.contrib.auth.models import User, AbstractUser
+# from django.contrib.auth.models import User, AbstractUser
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -54,29 +53,34 @@ class View(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class User(AbstractUser):
+    role = [
+        ('player', 'Игрок'),
+        ('agent', 'Агент'),
+        ('club', 'Клуб'),
+        ('parent', 'Родитель'),
+        ('trainer', 'Тренер'),
+        ('scout', 'Скаут'),
+    ]
     username = models.CharField(max_length=150, unique=True)
+    role = models.CharField(verbose_name='Роль', max_length=20, choices=role, blank=True, null=True,
+                                 default='player')
+
+
 class UserPhoto(models.Model):
-    # role = [
-    #     ('player', 'Игрок'),
-    #     ('agent', 'Агент'),
-    #     ('club', 'Клуб'),
-    #     ('parent', 'Родитель'),
-    #     ('trainer', 'Тренер'),
-    #     ('scout', 'Скаут'),
-    # ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, to_field='username')
     photo = models.ImageField(upload_to=photo_upload_to, blank=True)
-    # user_role = position = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
+    # user_role = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
     #                                    null=True, default='player')
+
+
 @receiver(pre_delete, sender=UserPhoto)
 def userphoto_delete(sender, instance, **kwargs):
     # Удаляем файл при удалении объекта UserPhoto
     if instance.photo:
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
-
-
 
 
 class Player(models.Model):
@@ -86,7 +90,7 @@ class Player(models.Model):
         ('B', 'Обе')
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE,to_field='username', blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username', blank=True, null=True)
     leg = models.TextField('Нога', choices=leg, blank=True, null=True)
     position = MultiSelectField(verbose_name='Позиция', choices=POSITION_CHOICES, blank=True, null=True)
     age = models.CharField("Возраст", max_length=5, blank=True, null=True)
@@ -103,8 +107,7 @@ class Player(models.Model):
     description = models.TextField("Описание", max_length=254, blank=True, null=True)
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     views = models.ManyToManyField(View, related_name="player_views", blank=True)
-    subscribe = models.IntegerField("Количество видео",blank=True,default=1)
-
+    subscribe = models.IntegerField("Количество видео", blank=True, default=1)
 
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
@@ -114,15 +117,19 @@ class Player(models.Model):
     def total_views(self):
         return self.views.count()
 
+
 class PlayersVideo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='username', blank=True, null=True)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, blank=True, null=True)
     video = models.FileField("Видео", upload_to=video_upload_to, null=True, blank=True, max_length=150)
     description = models.TextField(blank=True, null=True, )
     created_at = models.DateTimeField(auto_now_add=True)
-    title = models.CharField("Заголовок", max_length=255,blank=True)
+    title = models.CharField("Заголовок", max_length=255, blank=True)
+
     def __str__(self):
         return str(self.video.name)
+
+
 @receiver(pre_delete, sender=PlayersVideo)
 def userphoto_delete(sender, instance, **kwargs):
     # Удаляем файл при удалении объекта UserPhoto
@@ -130,11 +137,12 @@ def userphoto_delete(sender, instance, **kwargs):
         if os.path.isfile(instance.video.path):
             os.remove(instance.video.path)
 
+
 class Agent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True, null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True, null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -149,9 +157,9 @@ class Agent(models.Model):
 
 class Parent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True, null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True, null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -159,7 +167,7 @@ class Parent(models.Model):
     is_show = models.BooleanField("Отображать_всем", default=True, blank=True, null=True)
     # passport = models.ImageField("Фото паспорта", upload_to='documents/', blank=True)
     players = models.ManyToManyField(Player, related_name="parent_players", blank=True, verbose_name="Игроки родителя")
-    views = models.ManyToManyField(View, related_name='players', verbose_name='Просмотры',blank=True)
+    views = models.ManyToManyField(View, related_name='players', verbose_name='Просмотры', blank=True)
 
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
 
@@ -169,9 +177,9 @@ class Parent(models.Model):
 
 class Trainer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True, null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True, null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -205,8 +213,8 @@ class Club(models.Model):
         ('13-14', '13-14'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    national_name = models.CharField("Национальное название клуба", max_length=20, blank=True,null=True)
-    eng_name = models.CharField("Английское название клуба", max_length=30, blank=True,null=True)
+    national_name = models.CharField("Национальное название клуба", max_length=20, blank=True, null=True)
+    eng_name = models.CharField("Английское название клуба", max_length=30, blank=True, null=True)
     # phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)
@@ -216,7 +224,8 @@ class Club(models.Model):
     # photo = models.ImageField("Фото в профиле", upload_to="profile_photoes", null=True, blank=True)
     players = models.ManyToManyField(Player, related_name="club_players", blank=True, verbose_name="Игроки клуба")
     schools = models.JSONField("Школы", blank=True, null=True)
-    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True,null=True)
+    school_ages = models.TextField("Возрастная группа школы", choices=ages, default="Возрастная группа", blank=True,
+                                   null=True)
 
     def __str__(self):
         return str(f"{self.national_name} {self.eng_name} ")
@@ -224,9 +233,9 @@ class Club(models.Model):
 
 class Scout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField("Имя", max_length=20, blank=True,null=True)
-    second_name = models.CharField("Фамилия", max_length=30, blank=True,null=True)
-    patronymic = models.CharField("Отчество", max_length=30, blank=True,null=True)
+    first_name = models.CharField("Имя", max_length=20, blank=True, null=True)
+    second_name = models.CharField("Фамилия", max_length=30, blank=True, null=True)
+    patronymic = models.CharField("Отчество", max_length=30, blank=True, null=True)
     phone = models.CharField("Номер Телефона", max_length=30, blank=True, null=True)
     email = models.EmailField("Почта", max_length=100, blank=True, null=True)
     country = models.CharField("Страна", max_length=40, blank=True, null=True)

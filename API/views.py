@@ -57,6 +57,7 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        print(request.data['role'])
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
