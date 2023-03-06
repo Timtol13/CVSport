@@ -6,7 +6,7 @@ from API.models import User
 
 class UserSerializer(serializers.ModelSerializer):
     # photo = serializers.ImageField(required=False)
-    # role = serializers.MultipleChoiceField(max_length=100, required=False)
+    # role = serializers.MultipleChoiceField(max_length=20, required=False)
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'role']  # 'photo']
@@ -30,18 +30,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserPhotoSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(source='user.role')
     class Meta:
         model = UserPhoto
         fields = '__all__'
 
-    def create(self, validated_data):
-        photo = UserPhoto.objects.create(
-            user=validated_data['user'],
-            photo=validated_data['photo']
-            # role=validated_data['role'],
-        )
-        photo.save()
-        return photo
+    # def create(self, validated_data):
+    #     photo = UserPhoto.objects.create(
+    #         user=validated_data['user'],
+    #         photo=validated_data['photo']
+    #         # role=validated_data['role'],
+    #     )
+    #     photo.save()
+    #     return photo
 
     # def update(self, instance, validated_data):
     #     # Валидация и сохранение фото
@@ -111,7 +112,7 @@ class ScoutSerializer(serializers.ModelSerializer):
 
 class VideoSerializer(serializers.ModelSerializer):
     #user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
+    role = serializers.CharField(source='user.role')
     class Meta:
         model = PlayersVideo
         fields = '__all__'

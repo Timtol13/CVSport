@@ -71,8 +71,9 @@ class User(AbstractUser):
 class UserPhoto(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, to_field='username')
     photo = models.ImageField(upload_to=photo_upload_to, blank=True)
-    # user_role = MultiSelectField(verbose_name='Роль', choices=role, blank=True,
-    #                                    null=True, default='player')
+
+    def get_user_role(self):
+        return self.user.role
 
 
 @receiver(pre_delete, sender=UserPhoto)

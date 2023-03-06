@@ -334,9 +334,11 @@ class UserPhotoApiView(viewsets.ModelViewSet):
 
         # Create the serializer with the request data and set the user field
         request.data['user'] = user.username
+        request.data['role'] = user.role
         serializer = UserPhotoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['user'] = user
+
         # Call serializer.save() to create the UserPhoto object
         serializer.save()
 
@@ -353,6 +355,7 @@ class UserPhotoApiView(viewsets.ModelViewSet):
             serializer = UserPhotoSerializer(user_photo)
             return Response(serializer.data, status=status.HTTP_200_OK)
         request.data['user'] = kwargs['username']
+        request.data['role'] = user_photo.user.role
         serializer = UserPhotoSerializer(user_photo, data=request.data)
 
         serializer.is_valid(raise_exception=True)
@@ -405,17 +408,22 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
         # Get the user object corresponding to the username in the request data
         try:
             user = User.objects.get(username=kwargs['username'])
-            player = Player.objects.get(user=user)
+
         except User.DoesNotExist:
-            return Response({'error': 'User with username {} not found'.format(request.data['username'])},
+            return Response({'error': 'User with username {} not found'.format(kwargs['username'])},
                             status=status.HTTP_400_BAD_REQUEST)
-        # except Player.DoesNotExist:
-        #     return Response({'error': 'Player to username {} not found'.format(request.data['username'])},
-        #                     status=status.HTTP_400_BAD_REQUEST)
+        try:
+            player = Player.objects.get(user=user)
+
+        except Player.DoesNotExist:
+            return Response({'error': f'Player to username {kwargs["username"]} not found'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
         # Create the serializer with the request data and set the user field
         request.data['user'] = kwargs['username']
         request.data['player'] = player.pk
+        request.data['role'] = user.role
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['user'] = user
