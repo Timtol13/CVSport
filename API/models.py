@@ -56,12 +56,12 @@ class View(models.Model):
 
 class User(AbstractUser):
     role = [
-        ('player', 'Игрок'),
-        ('agent', 'Агент'),
-        ('club', 'Клуб'),
-        ('parent', 'Родитель'),
-        ('trainer', 'Тренер'),
-        ('scout', 'Скаут'),
+        ('Player', 'Игрок'),
+        ('Agent', 'Агент'),
+        ('Club', 'Клуб'),
+        ('Parent', 'Родитель'),
+        ('Trainer', 'Тренер'),
+        ('Scout', 'Скаут'),
     ]
     username = models.CharField(max_length=150, unique=True)
     role = models.CharField(verbose_name='Роль', max_length=20, choices=role, blank=True, null=True,

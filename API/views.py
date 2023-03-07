@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import get_object_or_404, DestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,11 +11,10 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from .models import *
 # from API.models import User
-#from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 from ipware import get_client_ip
-
 
 from rest_framework.pagination import PageNumberPagination
 
@@ -57,16 +56,27 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print(request.data['role'])
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
+class UserDeleteView(DestroyAPIView):
+    queryset = User.objects.all()
+    lookup_field = 'username'
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        if request.user.username == kwargs['username']:
+            response = super().delete(request, *args, **kwargs)
+            return Response({'message': 'User deleted successfully'})
+        else:
+            return Response({'message': 'You do not have permission to delete this user'})
+
 
 class AdvancedRegistration_ApiView(viewsets.ModelViewSet):
     lookup_field = 'username'
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
@@ -83,13 +93,12 @@ class AdvancedRegistration_ApiView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class AdvancedRegistration_Player_ApiView(AdvancedRegistration_ApiView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
+    search_fields = ['first_name', 'second_name', 'patronymic', 'user__username']
     lookup_field = 'username'
 
     def create(self, request, *args, **kwargs):
@@ -126,7 +135,9 @@ class AdvancedRegistration_Agent_ApiView(AdvancedRegistration_ApiView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
+    search_fields = ['first_name', 'second_name', 'patronymic', 'user__username']
+
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_agent = Agent.objects.filter(user=user).first()
@@ -161,8 +172,9 @@ class AdvancedRegistration_Trainer_ApiView(AdvancedRegistration_ApiView):
     queryset = Trainer.objects.all()
     serializer_class = TrainerSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    search_fields = ['first_name', 'second_name', 'patronymic', 'user__username']
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
+
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_trainer = Trainer.objects.filter(user=user).first()
@@ -197,8 +209,9 @@ class AdvancedRegistration_Parent_ApiView(AdvancedRegistration_ApiView):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    search_fields = ['first_name', 'second_name', 'patronymic', 'user__username']
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
+
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_parent = Parent.objects.filter(user=user).first()
@@ -228,12 +241,14 @@ class AdvancedRegistration_Parent_ApiView(AdvancedRegistration_ApiView):
         serializer = self.get_serializer(parent)
         return Response(serializer.data)
 
+
 class AdvancedRegistration_Club_ApiView(AdvancedRegistration_ApiView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['national_name', 'eng_name','user__username']
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    search_fields = ['national_name', 'eng_name', 'user__username']
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
+
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_club = Club.objects.filter(user=user).first()
@@ -263,12 +278,13 @@ class AdvancedRegistration_Club_ApiView(AdvancedRegistration_ApiView):
         serializer = self.get_serializer(club)
         return Response(serializer.data)
 
+
 class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
     queryset = Scout.objects.all()
     serializer_class = ScoutSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'second_name', 'patronymic','user__username']
-    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    search_fields = ['first_name', 'second_name', 'patronymic', 'user__username']
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
     def create(self, request, *args, **kwargs):
         user = request.user
         existing_scout = Scout.objects.filter(user=user).first()
@@ -298,10 +314,13 @@ class AdvancedRegistration_Scout_ApiView(AdvancedRegistration_ApiView):
         serializer = self.get_serializer(scout)
         return Response(serializer.data)
 
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 20
     page_size_query_param = 'page_size'
     max_page_size = 100
+
+
 class UserPhotoApiView(viewsets.ModelViewSet):
     serializer_class = UserPhotoSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
@@ -388,6 +407,7 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
     pagination_class = StandardResultsSetPagination
+
     def get_queryset(self):
         if 'username' in self.kwargs:
             # Если задан username, вернуть видео только для этого пользователя
@@ -395,14 +415,13 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
         else:
             # Иначе, вернуть все фотографии
             return PlayersVideo.objects.all()
+
     def list(self, request, *args, **kwargs):
         # Метод list будет обслуживать GET-запросы к коллекции фотографий
         queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-
-
 
     def create(self, request, *args, **kwargs):
         # Get the user object corresponding to the username in the request data
@@ -418,7 +437,6 @@ class AdvancedRegistration_Video_ApiView(viewsets.ModelViewSet):
         except Player.DoesNotExist:
             return Response({'error': f'Player to username {kwargs["username"]} not found'},
                             status=status.HTTP_400_BAD_REQUEST)
-
 
         # Create the serializer with the request data and set the user field
         request.data['user'] = kwargs['username']
