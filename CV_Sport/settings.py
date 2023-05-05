@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 import os
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -14,7 +15,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
-    'http://localhost:8000'
+    'http://localhost:8000',
+    'http://178.159.45.63:3000',
+    'http://test.cvsportbase.com'
 ]
 
 INSTALLED_APPS = [
@@ -28,10 +31,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'easy_thumbnails',
     'mptt',
+    'chat',
+    'channels',
     'corsheaders',
     'API',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -41,7 +45,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -52,6 +55,18 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = 'CV_Sport.urls'
+
+CHANNELS_REDIS_HOST = 'localhost'
+CHANNELS_REDIS_PORT = '8080'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [f"redis://{CHANNELS_REDIS_HOST}:{CHANNELS_REDIS_PORT}/3"],
+        },
+    },
+}
 
 TEMPLATES = [
     {
@@ -71,6 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'CV_Sport.wsgi.application'
+ASGI_APPLICATION = "CV_Sport.asgi.application"
 
 
 DATABASES = {

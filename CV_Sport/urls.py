@@ -9,6 +9,7 @@ from API.views import RegisterView, UserDeleteView
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('api/', include('API.urls')),
+                  path('chat/', include('chat.urls')),
                   path('registration/',RegisterView.as_view(), name='registration'),
                   path('unregister/<str:username>/delete/',UserDeleteView.as_view(), name='delete_user'),
                   path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
